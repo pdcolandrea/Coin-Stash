@@ -32,3 +32,9 @@ export interface Roi {
   currency: string;
   percentage: number;
 }
+
+export interface CoinGeckoHistoryResp {
+  prices: number[][];
+  market_caps: number[][];
+  total_volumes: number[][];
+}

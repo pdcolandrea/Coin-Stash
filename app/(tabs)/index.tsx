@@ -7,8 +7,14 @@ import { USDformatter } from "@/lib/format";
 import { CoinGeckoMarketResp } from "@/types/coin-gecko";
 import { Nullable } from "@/types/util";
 import { Feather, FontAwesome5 } from "@expo/vector-icons";
-import { useState } from "react";
-import { FlatList, Image } from "react-native";
+import { useEffect, useState } from "react";
+import {
+  FlatList,
+  Image,
+  LayoutAnimation,
+  TouchableOpacity,
+} from "react-native";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { LineChart } from "react-native-wagmi-charts";
 
 const FAKE_NEWS = [
@@ -30,7 +36,7 @@ const FAKE_NEWS = [
   },
 ];
 
-const data = [
+const DEFAULT_DATA = [
   {
     timestamp: 1625945400000,
     value: 33575.25,
@@ -41,7 +47,7 @@ const data = [
   },
   {
     timestamp: 1625947200000,
-    value: 33510.25,
+    value: 33575.25,
   },
   {
     timestamp: 1625948100000,
@@ -50,9 +56,25 @@ const data = [
 ];
 
 export default function TabOneScreen() {
-  const { coins } = useCryptoContext();
+  const { coins, fetchChartData } = useCryptoContext();
+  const [graphData, setGraphData] = useState<typeof DEFAULT_DATA>(DEFAULT_DATA);
   const [selectedCoin, setSelectedCoin] =
     useState<Nullable<CoinGeckoMarketResp>>(null);
+
+  useEffect(() => {
+    if (selectedCoin && selectedCoin.id) {
+      fetchChartData(selectedCoin.id).then((resp) => {
+        setGraphData(
+          resp.prices.map((price) => {
+            return {
+              timestamp: price[0],
+              value: price[1],
+            };
+          })
+        );
+      });
+    }
+  }, [selectedCoin]);
 
   return (
     <View className="flex flex-1 items-center bg-[#14161d] py-4">
@@ -122,10 +144,13 @@ export default function TabOneScreen() {
                 return (
                   <View className="flex mb-2">
                     <View className="h-40 w-full">
-                      <LineChart.Provider data={data}>
-                        <LineChart height={160}>
+                      <LineChart.Provider data={graphData}>
+                        <LineChart height={160} pointe>
                           <LineChart.Path color="#DD574D" />
+                          <LineChart.CursorCrosshair />
                         </LineChart>
+                        <LineChart.PriceText />
+                        <LineChart.DatetimeText />
                       </LineChart.Provider>
                     </View>
                     <View className="flex-row justify-between items-center">
@@ -141,16 +166,24 @@ export default function TabOneScreen() {
               }}
               renderItem={({ item, index }) => {
                 return (
-                  <View className="flex-row mb-4 items-center">
-                    <CoinGeckoIcon id={item.id} />
-                    <View className="items-center flex-row justify-between flex-1">
-                      <View className="flex-col ml-2">
-                        <Text className="text-lg">{item.name}</Text>
-                        <Text>{USDformatter.format(item.current_price)}</Text>
+                  <Animated.View
+                    entering={FadeIn.duration(index * 1000)}
+                    className="flex-row mb-4 items-center"
+                  >
+                    <TouchableOpacity
+                      className="flex-row items-center"
+                      onPress={() => setSelectedCoin(item)}
+                    >
+                      <CoinGeckoIcon id={item.id} />
+                      <View className="items-center flex-row justify-between flex-1">
+                        <View className="flex-col ml-2">
+                          <Text className="text-lg">{item.name}</Text>
+                          <Text>{USDformatter.format(item.current_price)}</Text>
+                        </View>
+                        <Price change={item.price_change_percentage_24h} />
                       </View>
-                      <Price change={item.price_change_percentage_24h} />
-                    </View>
-                  </View>
+                    </TouchableOpacity>
+                  </Animated.View>
                 );
               }}
             />
