@@ -1,7 +1,10 @@
+import DynamicCryptoIcon from "@/components/DynamicCryptoIcon";
 import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
+import { useCryptoContext } from "@/lib/context/crypto-context";
+import { USDformatter } from "@/lib/format";
 import { Feather, FontAwesome5 } from "@expo/vector-icons";
-import { FlatList } from "react-native";
+import { FlatList, Image } from "react-native";
 
 const FAKE_NEWS = [
   {
@@ -23,6 +26,8 @@ const FAKE_NEWS = [
 ];
 
 export default function TabOneScreen() {
+  const { coins } = useCryptoContext();
+
   return (
     <View className="flex flex-1 items-center bg-[#14161d] py-4">
       <View>
@@ -46,6 +51,7 @@ export default function TabOneScreen() {
             <Text className="text-xl font-semibold">News</Text>
             <Text className="text-lg text-[#b5c0d0]">More</Text>
           </View>
+
           <FlatList
             data={FAKE_NEWS}
             className="mt-2"
@@ -94,16 +100,23 @@ export default function TabOneScreen() {
             </View>
 
             <FlatList
-              data={[1, 2]}
+              data={coins}
               className="mt-2"
+              showsVerticalScrollIndicator={false}
+              // StickyHeaderComponent={() => {
+              //   return <View></View>;
+              // }}
               renderItem={({ item, index }) => {
                 return (
                   <View className="flex-row mb-4 items-center">
-                    <FontAwesome5 name="bitcoin" size={40} color="#f2a900" />
+                    <DynamicCryptoIcon
+                      network={item.name}
+                      symbol={item.symbol}
+                    />
                     <View className="items-center flex-row justify-between flex-1">
                       <View className="flex-col ml-2">
-                        <Text className="text-lg">Bitcoin</Text>
-                        <Text>$32,102.21</Text>
+                        <Text className="text-lg">{item.name}</Text>
+                        <Text>{USDformatter.format(item.current_price)}</Text>
                       </View>
                       <View className="flex-row items-center ">
                         <Feather
@@ -111,7 +124,9 @@ export default function TabOneScreen() {
                           size={20}
                           color="#DD574D"
                         />
-                        <Text className="text-lg text-white ml-2">0.79%</Text>
+                        <Text className="text-lg text-white ml-2">
+                          {item.price_change_percentage_24h}
+                        </Text>
                       </View>
                     </View>
                   </View>
