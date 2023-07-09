@@ -1,3 +1,4 @@
+import CoinGeckoIcon from "@/components/CoinGeckoIcon";
 import DynamicCryptoIcon from "@/components/DynamicCryptoIcon";
 import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
@@ -109,10 +110,7 @@ export default function TabOneScreen() {
               renderItem={({ item, index }) => {
                 return (
                   <View className="flex-row mb-4 items-center">
-                    <DynamicCryptoIcon
-                      network={item.name}
-                      symbol={item.symbol}
-                    />
+                    <CoinGeckoIcon id={item.id} />
                     <View className="items-center flex-row justify-between flex-1">
                       <View className="flex-col ml-2">
                         <Text className="text-lg">{item.name}</Text>

@@ -47,6 +47,21 @@ const DynamicCryptoIcon = ({
       case "xrp":
         icon = require("../node_modules/cryptocurrency-icons/32/color/xrp.png");
         break;
+      case "lido staked ether":
+        icon = require("../node_modules/cryptocurrency-icons/32/color/eth.png");
+        break;
+      case "cardano":
+        icon = require("../node_modules/cryptocurrency-icons/32/color/ada.png");
+        break;
+      case "dogecoin":
+        icon = require("../node_modules/cryptocurrency-icons/32/color/doge.png");
+        break;
+      case "solana":
+        icon = require("../node_modules/cryptocurrency-icons/32/color/sol.png");
+        break;
+      case "tron":
+        icon = require("../node_modules/cryptocurrency-icons/32/color/trx.png");
+        break;
       default:
         icon = require("../node_modules/cryptocurrency-icons/32/color/btc.png");
         break;
