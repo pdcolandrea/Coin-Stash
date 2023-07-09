@@ -1,6 +1,5 @@
 import React from "react";
 import { Image, ImageStyle } from "react-native";
-import crypto from "cryptocurrency-icons";
 
 const DynamicCryptoIcon = ({
   network,
@@ -9,9 +8,18 @@ const DynamicCryptoIcon = ({
   network: string;
   symbol: string;
 }) => {
+  if (!network || !symbol) {
+    return (
+      <Image
+        source={require("../node_modules/cryptocurrency-icons/32/color/btc.png")}
+      />
+    );
+  }
+
   network = network.toLowerCase();
 
   let icon = require("../node_modules/cryptocurrency-icons/32/color/btc.png");
+  // wen dynmaic imports :(
   //   try {
   //     icon = require(`../node_modules/cryptocurrency-icons/32/color/${symbol}.png`);
   //     return <Image source={icon} style={$imageStyle} />;
@@ -28,7 +36,16 @@ const DynamicCryptoIcon = ({
         icon = require("../node_modules/cryptocurrency-icons/32/color/eth.png");
         break;
       case "tether":
-        icon = require("../node_modules/cryptocurrency-icons/32/color/tether.png");
+        icon = require("../node_modules/cryptocurrency-icons/32/color/usdt.png");
+        break;
+      case "bnb":
+        icon = require("../node_modules/cryptocurrency-icons/32/color/bnb.png");
+        break;
+      case "usd coin":
+        icon = require("../node_modules/cryptocurrency-icons/32/color/usdc.png");
+        break;
+      case "xrp":
+        icon = require("../node_modules/cryptocurrency-icons/32/color/xrp.png");
         break;
       default:
         icon = require("../node_modules/cryptocurrency-icons/32/color/btc.png");
