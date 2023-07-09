@@ -1,7 +1,26 @@
 import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
-import { Feather } from "@expo/vector-icons";
+import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import { FlatList } from "react-native";
+
+const FAKE_NEWS = [
+  {
+    id: 1,
+    title:
+      "Bitcoin's three week loosing streak due to FTX downfall snapped by Powewll-inspired rally.",
+    source: "Seeking Alpha",
+    time: "2h",
+    crypto: "Bitcoin",
+  },
+  {
+    id: 2,
+    title:
+      "Bitcoin's three week loosing streak due to FTX downfall snapped by Powewll-inspired rally.",
+    source: "Seeking Alpha",
+    time: "2h",
+    crypto: "Bitcoin",
+  },
+];
 
 export default function TabOneScreen() {
   return (
@@ -12,14 +31,14 @@ export default function TabOneScreen() {
         </Text>
         <View className="flex flex-row items-center justify-around">
           <View className="flex-row items-center">
-            <Feather name="arrow-down-right" size={20} color="red" />
-            <Text className="text-lg text-[#b5c0d0]">1.54%</Text>
+            <Feather name="arrow-down-right" size={20} color="#DD574D" />
+            <Text className="text-lg text-[#b5c0d0] ml-1">1.54%</Text>
           </View>
           <Text className="text-lg text-[#b5c0d0]">$234.50</Text>
         </View>
       </View>
 
-      <View className="h-52 bg-slate-600 w-full"></View>
+      <View className="h-40 w-full"></View>
 
       <View className="mt-4 px-4 flex w-full">
         <View className="flex w-full">
@@ -28,21 +47,78 @@ export default function TabOneScreen() {
             <Text className="text-lg text-[#b5c0d0]">More</Text>
           </View>
           <FlatList
-            data={[1, 2, 3]}
+            data={FAKE_NEWS}
+            className="mt-2"
             horizontal
+            ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
+            showsHorizontalScrollIndicator={false}
             renderItem={({ item, index }) => {
               return (
                 <View
+                  key={item.id}
+                  className="p-2"
                   style={{
-                    width: 100,
+                    width: 320,
                     height: 130,
-                    borderRadius: 4,
+                    borderRadius: 6,
                     backgroundColor: "#1f232b",
                   }}
-                ></View>
+                >
+                  <Text className="text-lg font-semibold">{item.title}</Text>
+                  <View
+                    darkColor="transparent"
+                    className="flex-row justify-between mt-auto"
+                  >
+                    <View
+                      darkColor="transparent"
+                      className="flex-row items-center"
+                    >
+                      <FontAwesome5 name="bitcoin" size={18} color="#f2a900" />
+                      <Text className="text-[#a1a7af] ml-1">{item.crypto}</Text>
+                    </View>
+                    <Text className="text-[#a1a7af]">{item.source} - 2h</Text>
+                  </View>
+                </View>
               );
             }}
           />
+
+          <View className="mt-4">
+            <View className="flex-row justify-between items-center">
+              <View className="flex-row items-center">
+                <Text className="font-bold text-lg">Crypto List</Text>
+                <View className="w-[2px] h-full bg-red-100 mx-2" />
+                <Text className="text-lg text-[#b5c0d0]">24H</Text>
+              </View>
+              <Text className="text-lg text-[#b5c0d0]">Edit</Text>
+            </View>
+
+            <FlatList
+              data={[1, 2]}
+              className="mt-2"
+              renderItem={({ item, index }) => {
+                return (
+                  <View className="flex-row mb-4 items-center">
+                    <FontAwesome5 name="bitcoin" size={40} color="#f2a900" />
+                    <View className="items-center flex-row justify-between flex-1">
+                      <View className="flex-col ml-2">
+                        <Text className="text-lg">Bitcoin</Text>
+                        <Text>$32,102.21</Text>
+                      </View>
+                      <View className="flex-row items-center ">
+                        <Feather
+                          name="arrow-down-right"
+                          size={20}
+                          color="#DD574D"
+                        />
+                        <Text className="text-lg text-white ml-2">0.79%</Text>
+                      </View>
+                    </View>
+                  </View>
+                );
+              }}
+            />
+          </View>
         </View>
       </View>
     </View>
