@@ -58,12 +58,11 @@ const DEFAULT_DATA = [
 export default function TabOneScreen() {
   const { coins, fetchChartData } = useCryptoContext();
   const [graphData, setGraphData] = useState<typeof DEFAULT_DATA>(DEFAULT_DATA);
-  const [selectedCoin, setSelectedCoin] =
-    useState<Nullable<CoinGeckoMarketResp>>(null);
+  const [selectedCoin, setSelectedCoin] = useState("");
 
   useEffect(() => {
-    if (selectedCoin && selectedCoin.id) {
-      fetchChartData(selectedCoin.id).then((resp) => {
+    if (selectedCoin) {
+      fetchChartData(selectedCoin).then((resp) => {
         setGraphData(
           resp.prices.map((price) => {
             return {
@@ -75,6 +74,12 @@ export default function TabOneScreen() {
       });
     }
   }, [selectedCoin]);
+
+  useEffect(() => {
+    if (coins && !selectedCoin) {
+      setSelectedCoin("bitcoin");
+    }
+  }, [coins]);
 
   return (
     <View className="flex flex-1 items-center bg-[#14161d] py-4">
@@ -172,7 +177,7 @@ export default function TabOneScreen() {
                   >
                     <TouchableOpacity
                       className="flex-row items-center"
-                      onPress={() => setSelectedCoin(item)}
+                      onPress={() => setSelectedCoin(item.id)}
                     >
                       <CoinGeckoIcon id={item.id} />
                       <View className="items-center flex-row justify-between flex-1">
