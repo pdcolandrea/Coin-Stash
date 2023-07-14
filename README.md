@@ -46,3 +46,5 @@ npm run build
 
 yarn build
 ```
+
+todo: add expo snack

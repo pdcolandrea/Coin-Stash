@@ -40,8 +40,8 @@ export default function TabOneScreen() {
     useState<Nullable<CoinGeckoMarketResp>>(null);
   const { data: coins } = useGetCryptoList();
   const { data: chartData } = useGetHistoricalData(selectedCoin?.id ?? "", 1);
-  const navigation = useNavigation();
   const { dollars, cents } = useSplitPrice(selectedCoin?.current_price);
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (coins && !selectedCoin) {
@@ -103,10 +103,10 @@ export default function TabOneScreen() {
                       >
                         <LineChart height={160}>
                           <LineChart.Path color="#DD574D" />
-                          <LineChart.CursorCrosshair />
+                          <LineChart.CursorCrosshair>
+                            <LineChart.Tooltip />
+                          </LineChart.CursorCrosshair>
                         </LineChart>
-                        <LineChart.PriceText variant="value" />
-                        <LineChart.DatetimeText />
                       </LineChart.Provider>
                     </View>
                     <View className="flex-row justify-between items-center">
