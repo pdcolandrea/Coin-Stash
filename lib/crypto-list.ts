@@ -67,6 +67,11 @@ export const CoinList = {
   binanceusd: {
     name: "Binance USD",
     symbol: "busd",
+    icon: require("../node_modules/cryptocurrency-icons/32/color/bnb.png"),
+  },
+  "usd-coin": {
+    name: "USD Coin",
+    symbol: "busd",
     icon: require("../node_modules/cryptocurrency-icons/32/color/usdc.png"),
   },
   theta: {
@@ -158,6 +163,11 @@ export const CoinList = {
     name: "Bitcoin Cash",
     symbol: "bch",
     icon: require("../node_modules/cryptocurrency-icons/32/color/bch.png"),
+  },
+  "staked-ether": {
+    name: "Ethereum",
+    symbol: "steth",
+    icon: require("../node_modules/cryptocurrency-icons/32/color/eth.png"),
   },
 };
 

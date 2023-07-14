@@ -26,10 +26,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Tab One",
+          title: "Bitcoin",
           headerShadowVisible: false,
           headerStyle: {
-            backgroundColor: "#14161d",
+            backgroundColor: colorScheme === "light" ? "white" : "#14161d",
           },
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerRight: () => (

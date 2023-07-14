@@ -1,40 +1,20 @@
-import CoinGeckoIcon from "@/components/CoinGeckoIcon";
-import DynamicCryptoIcon from "@/components/DynamicCryptoIcon";
-import Price from "@/components/Price";
-import { Text, View } from "@/components/Themed";
-import { useCryptoContext } from "@/lib/context/crypto-context";
-import { USDformatter } from "@/lib/format";
-import { CoinGeckoMarketResp } from "@/types/coin-gecko";
-import { Nullable } from "@/types/util";
-import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import {
-  FlatList,
-  Image,
-  LayoutAnimation,
-  TouchableOpacity,
-} from "react-native";
+import { FlatList, LayoutAnimation, TouchableOpacity } from "react-native";
+import { Text, View } from "@/components/Themed";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { LineChart } from "react-native-wagmi-charts";
+import { Feather } from "@expo/vector-icons";
 
-const FAKE_NEWS = [
-  {
-    id: 1,
-    title:
-      "Bitcoin's three week loosing streak due to FTX downfall snapped by Powewll-inspired rally.",
-    source: "Seeking Alpha",
-    time: "2h",
-    crypto: "Bitcoin",
-  },
-  {
-    id: 2,
-    title:
-      "Bitcoin's three week loosing streak due to FTX downfall snapped by Powewll-inspired rally.",
-    source: "Seeking Alpha",
-    time: "2h",
-    crypto: "Bitcoin",
-  },
-];
+import { USDformatter } from "@/lib/format";
+import { useGetCryptoList, useGetHistoricalData } from "@/hooks/useCrypto";
+import Price from "@/components/Price";
+import { CoinGeckoIconV2 } from "@/components/CoinGeckoIcon";
+
+import { useNavigation } from "expo-router";
+import { CoinGeckoMarketResp } from "@/types/coin-gecko";
+import { Nullable } from "@/types/util";
+import { useSplitPrice } from "@/hooks/usePrice";
+import News from "@/components/News";
 
 const DEFAULT_DATA = [
   {
@@ -56,36 +36,37 @@ const DEFAULT_DATA = [
 ];
 
 export default function TabOneScreen() {
-  const { coins, fetchChartData } = useCryptoContext();
-  const [graphData, setGraphData] = useState<typeof DEFAULT_DATA>(DEFAULT_DATA);
-  const [selectedCoin, setSelectedCoin] = useState("");
-
-  useEffect(() => {
-    if (selectedCoin) {
-      fetchChartData(selectedCoin).then((resp) => {
-        setGraphData(
-          resp.prices.map((price) => {
-            return {
-              timestamp: price[0],
-              value: price[1],
-            };
-          })
-        );
-      });
-    }
-  }, [selectedCoin]);
+  const [selectedCoin, setSelectedCoin] =
+    useState<Nullable<CoinGeckoMarketResp>>(null);
+  const { data: coins } = useGetCryptoList();
+  const { data: chartData } = useGetHistoricalData(selectedCoin?.id ?? "", 1);
+  const navigation = useNavigation();
+  const { dollars, cents } = useSplitPrice(selectedCoin?.current_price);
 
   useEffect(() => {
     if (coins && !selectedCoin) {
-      setSelectedCoin("bitcoin");
+      // @ts-ignore gets the fetching process started
+      setSelectedCoin({
+        id: "bitcoin",
+        name: "Bitcoin",
+      });
     }
   }, [coins]);
 
+  useEffect(() => {
+    if (selectedCoin?.name === "") return;
+
+    navigation.setOptions({
+      title: selectedCoin?.name,
+    });
+  }, [selectedCoin]);
+
   return (
-    <View className="flex flex-1 items-center bg-[#14161d] py-4">
-      <View>
-        <Text className="text-5xl font-semibold">
-          $12,401<Text className="font-medium text-3xl">.90</Text>
+    <View className="flex flex-1 items-center dark:bg-[#14161d] py-4">
+      <View className="flex justify-center min-w-[50%]">
+        <Text className="text-5xl font-semibold text-center">
+          {dollars}
+          <Text className="font-medium text-3xl">.{cents}</Text>
         </Text>
         <View className="flex flex-row items-center justify-around">
           <View className="flex-row items-center">
@@ -98,63 +79,33 @@ export default function TabOneScreen() {
 
       <View className="mt-4 px-4 flex w-full">
         <View className="flex w-full">
-          {/* <View className="flex flex-row justify-between items-center">
-            <Text className="text-xl font-semibold">News</Text>
-            <Text className="text-lg text-[#b5c0d0]">More</Text>
-          </View>
+          {/* <News /> */}
 
-          <FlatList
-            data={FAKE_NEWS}
-            className="mt-2"
-            horizontal
-            ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item, index }) => {
-              return (
-                <View
-                  key={item.id}
-                  className="p-2"
-                  style={{
-                    width: 320,
-                    height: 130,
-                    borderRadius: 6,
-                    backgroundColor: "#1f232b",
-                  }}
-                >
-                  <Text className="text-lg font-semibold">{item.title}</Text>
-                  <View
-                    darkColor="transparent"
-                    className="flex-row justify-between mt-auto"
-                  >
-                    <View
-                      darkColor="transparent"
-                      className="flex-row items-center"
-                    >
-                      <FontAwesome5 name="bitcoin" size={18} color="#f2a900" />
-                      <Text className="text-[#a1a7af] ml-1">{item.crypto}</Text>
-                    </View>
-                    <Text className="text-[#a1a7af]">{item.source} - 2h</Text>
-                  </View>
-                </View>
-              );
-            }}
-          /> */}
-
-          <View className="mt-4">
+          <View className="mt-4 pb-20">
             <FlatList
               data={coins}
+              keyExtractor={(_, index) => `coin-${index}`}
               showsVerticalScrollIndicator={false}
               stickyHeaderIndices={[0]}
               ListHeaderComponent={() => {
                 return (
                   <View className="flex mb-2">
                     <View className="h-40 w-full">
-                      <LineChart.Provider data={graphData}>
-                        <LineChart height={160} pointe>
+                      <LineChart.Provider
+                        data={
+                          chartData?.prices.map((price) => {
+                            return {
+                              timestamp: price[0],
+                              value: price[1],
+                            };
+                          }) ?? DEFAULT_DATA
+                        }
+                      >
+                        <LineChart height={160}>
                           <LineChart.Path color="#DD574D" />
                           <LineChart.CursorCrosshair />
                         </LineChart>
-                        <LineChart.PriceText />
+                        <LineChart.PriceText variant="value" />
                         <LineChart.DatetimeText />
                       </LineChart.Provider>
                     </View>
@@ -172,14 +123,19 @@ export default function TabOneScreen() {
               renderItem={({ item, index }) => {
                 return (
                   <Animated.View
-                    entering={FadeIn.duration(index * 1000)}
+                    entering={FadeIn.delay(Math.min(index * 250, 3000))}
                     className="flex-row mb-4 items-center"
                   >
                     <TouchableOpacity
                       className="flex-row items-center"
-                      onPress={() => setSelectedCoin(item.id)}
+                      onPress={() => {
+                        LayoutAnimation.configureNext(
+                          LayoutAnimation.Presets.easeInEaseOut
+                        );
+                        setSelectedCoin(item);
+                      }}
                     >
-                      <CoinGeckoIcon id={item.id} />
+                      <CoinGeckoIconV2 url={item.image} />
                       <View className="items-center flex-row justify-between flex-1">
                         <View className="flex-col ml-2">
                           <Text className="text-lg">{item.name}</Text>

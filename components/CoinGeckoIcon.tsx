@@ -1,5 +1,6 @@
 import { CoinList, GeckoIds } from "@/lib/crypto-list";
-import { Image, ImageStyle } from "react-native";
+import { useState } from "react";
+import { Image, ImageStyle, View } from "react-native";
 
 const CoinGeckoIcon = ({ id }: { id: GeckoIds }) => {
   let icon;
@@ -9,6 +10,24 @@ const CoinGeckoIcon = ({ id }: { id: GeckoIds }) => {
     icon = require("../node_modules/cryptocurrency-icons/32/color/btc.png");
   }
   return <Image source={icon} style={$imageStyle} />;
+};
+
+export const CoinGeckoIconV2 = ({ url }: { url: string }) => {
+  const [imageSource, setImageSource] = useState({ uri: url });
+
+  return (
+    <View>
+      <Image
+        source={imageSource}
+        onError={() => {
+          setImageSource({
+            uri: "../node_modules/cryptocurrency-icons/32/color/btc.png",
+          });
+        }}
+        style={$imageStyle}
+      />
+    </View>
+  );
 };
 
 export default CoinGeckoIcon;

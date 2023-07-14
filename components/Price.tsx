@@ -7,6 +7,7 @@ const Price = ({ change }: { change: number }) => {
     name: "arrow-down-right",
     color: "#DD574D",
   };
+
   if (change > 0) {
     arrow = {
       name: "arrow-up-right",
@@ -20,9 +21,16 @@ const Price = ({ change }: { change: number }) => {
   }
 
   return (
-    <View style={{ flexDirection: "row", alignItems: "center" }}>
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+      }}
+    >
       <Feather name={arrow.name} size={20} color={arrow.color} />
-      <Text style={{ fontSize: 18, marginLeft: 8 }}>{change.toFixed(2)}%</Text>
+      <Text style={{ fontSize: 17, marginLeft: 8 }}>
+        {change < 0 ? `${(change * -1).toFixed(2)}` : `${change.toFixed(2)}`}%
+      </Text>
     </View>
   );
 };
