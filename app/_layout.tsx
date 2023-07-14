@@ -37,7 +37,6 @@ const queryClient = new QueryClient({
 });
 
 export default function RootLayout() {
-  const [storageLoaded, setStorageLoaded] = useState(false);
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
