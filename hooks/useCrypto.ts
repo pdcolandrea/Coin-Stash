@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchChartData, fetchCryptoList } from "@/lib/api/crypto-gecko";
 
 const QUERY_KEYS = {
@@ -6,12 +6,15 @@ const QUERY_KEYS = {
   CRYPTO: "CRYPTO_",
 };
 
-const generateHistoricalKey = (id: string, days: number) =>
-  `${QUERY_KEYS.CRYPTO}${id}_${days}`;
+const generateHistoricalKey = (id: string, days: number) => [
+  QUERY_KEYS.CRYPTO,
+  id,
+  days,
+];
 
 export const useGetCryptoList = () => {
   const queryClient = useQueryClient();
-  return useQuery(QUERY_KEYS.CRYPTO_LIST, fetchCryptoList, {
+  return useQuery([QUERY_KEYS.CRYPTO_LIST], fetchCryptoList, {
     staleTime: 180000,
     retry: false,
     onSuccess: (data) => {
